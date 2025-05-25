@@ -64,12 +64,12 @@ st.title("Hartă interactivă pentru evenimentele din războiul Rusia-Ucraina")
 min_date, max_date = df['event_date'].min().date(), df['event_date'].max().date()
 columns=st.columns([1,1])
 with columns[0]:
-    selected_min_date=st.date_input("Dată început",min_value=min_date,max_value=max_date)
+    selected_min_date=st.date_input("Dată început",min_date,min_value=min_date,max_value=max_date)
 with columns[1]:
     selected_max_date=st.date_input("Dată sfărșit",min_value=min_date,max_value=max_date)
 min_fatalities,max_fatalities=df['fatalities'].min(),df['fatalities'].max()
 selected_fatalities=st.slider("Interval număr de victime",min_value=min_fatalities,max_value=max_fatalities,value=(min_fatalities,max_fatalities))
-selected_sub_event = st.multiselect("Selectare tip eveniment", options=event_options, default=None)
+selected_sub_event = st.multiselect("Selectare tip eveniment", options=event_options, default=["Air/drone strike (28307)","Armed clash (58480)","Non-state actor overtakes territory (575)"])
 selected_events = [event.split(" (")[0] for event in selected_sub_event]
 #selected_source = st.multiselect("Select Source", df['source'].unique(), default=df['source'].unique())
 max_events = st.slider("Limitare număr evenimente", min_value=1000, max_value=len(df.index), value=5000, step=1000)
