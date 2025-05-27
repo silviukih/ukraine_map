@@ -35,9 +35,14 @@ event_colors = {
 }
 
 # incarcare date
+
+@st.cache_data
+def load_data(path):
+    df=pd.read_csv(path,parse_dates=['event_date'])
+    df['event_date']=pd.to_datetime(df['event_date'])
+    return df
 file_path = "Ukraine_Black_Sea_2020_2025_Mar07.csv"
-df = pd.read_csv(file_path, parse_dates=['event_date'])
-df['event_date'] = pd.to_datetime(df['event_date'])
+df = load_data(file_path)
 
 # numarare inregistrari per event type
 event_counts = df['sub_event_type'].value_counts()
@@ -85,18 +90,18 @@ filtered_df = filtered_df.head(max_events)
 m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=5)
 #colormap = cm.linear.YlOrRd.scale(min_fatalities, max_fatalities)  
 marker_cluster = MarkerCluster().add_to(m)
-for _, row in filtered_df.iterrows():
-    color = event_colors.get(row['sub_event_type'])
+for row in filtered_df.itertuples(index=False):
+    color = event_colors.get(row.sub_event_type)
     folium.CircleMarker(
-        location=[row['latitude'], row['longitude']],
-        radius=5 + (row['fatalities'] / max_fatalities) * 100,
+        location=[row.latitude, row.longitude],
+        radius=5 + (row.fatalities / max_fatalities) * 100,
         # color=colormap(row['fatalities'])
         color=color,
         fill=True,
         fill_color=color,
         fill_opacity=0.7,
         icon=folium.Icon(color=color),
-        popup=f'<span style="color:#FF4B4B;">Eveniment: </span>{row['sub_event_type']}<br><span style="color:#FF4B4B;">Dată: </span>{row['event_date'].date()}<br><span style="color:#FF4B4B;">Descriere: </span>{row['notes']}<br><span style="color:#FF4B4B;">Țară: </span>{row['country']}<br><span style="color:#FF4B4B;">Localitate: </span>{row['location']}'
+        popup=f'<span style="color:#FF4B4B;">Eveniment: </span>{row.sub_event_type}<br><span style="color:#FF4B4B;">Dată: </span>{row.event_date.date()}<br><span style="color:#FF4B4B;">Descriere: </span>{row.notes}<br><span style="color:#FF4B4B;">Țară: </span>{row.country}<br><span style="color:#FF4B4B;">Localitate: </span>{row.location}'
     ).add_to(marker_cluster)
 
 # afisare harta
